@@ -1,8 +1,10 @@
 package dev.vyro.client.module;
 
+import dev.vyro.client.module.modules.BaseFinder;
 import dev.vyro.client.module.modules.BunnyHop;
 import dev.vyro.client.module.modules.Flight;
 import dev.vyro.client.module.modules.Glow;
+import dev.vyro.client.module.modules.PlayerESP;
 import dev.vyro.client.module.modules.Sprint;
 
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ public class ModuleManager {
         MODULES.add(new BunnyHop());
         MODULES.add(new Glow());
         MODULES.add(new Flight());
+        MODULES.add(new PlayerESP());
+        MODULES.add(new BaseFinder());
     }
 
     public static void tick() {
