@@ -1,0 +1,72 @@
+package dev.vyro.client.gui;
+
+import dev.vyro.client.module.Module;
+import dev.vyro.client.module.ModuleManager;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.text.Text;
+
+public class ClickGui extends Screen {
+    // Farben im Format 0xAARRGGBB (AA = Deckkraft). Hier kannst du alles aendern.
+    private static final int BG_TOP      = 0xE00B1020; // Hintergrund oben
+    private static final int BG_BOTTOM   = 0xE02A0F45; // Hintergrund unten
+    private static final int PANEL       = 0xB0101018; // Panel-Flaeche
+    private static final int PANEL_EDGE  = 0xFF55FFFF; // Rahmen / Akzentfarbe
+    private static final int TITLE_COLOR = 0xFF55FFFF; // Titel
+
+    public ClickGui() {
+        super(Text.literal("Vyro"));
+    }
+
+    private static Text label(Module m) {
+        return Text.literal(m.name + ": " + (m.isEnabled() ? "AN" : "AUS"));
+    }
+
+    @Override
+    protected void init() {
+        int y = 40;
+        for (Module m : ModuleManager.MODULES) {
+            ButtonWidget button = ButtonWidget.builder(label(m), b -> {
+                    m.toggle();
+                    b.setMessage(label(m));
+                })
+                .dimensions(this.width / 2 - 75, y, 150, 20)
+                .tooltip(Tooltip.of(Text.literal(m.description)))
+                .build();
+            this.addDrawableChild(button);
+            y += 24;
+        }
+    }
+
+    @Override
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        // Verlauf ueber den ganzen Bildschirm (ersetzt den Standard-Hintergrund)
+        context.fillGradient(0, 0, this.width, this.height, BG_TOP, BG_BOTTOM);
+
+        // Panel hinter den Buttons
+        int left = this.width / 2 - 95;
+        int right = this.width / 2 + 95;
+        int top = 10;
+        int bottom = 40 + ModuleManager.MODULES.size() * 24 + 6;
+        context.fill(left, top, right, bottom, PANEL);
+
+        // Rahmen
+        context.fill(left, top, right, top + 1, PANEL_EDGE);
+        context.fill(left, bottom - 1, right, bottom, PANEL_EDGE);
+        context.fill(left, top, left + 1, bottom, PANEL_EDGE);
+        context.fill(right - 1, top, right, bottom, PANEL_EDGE);
+    }
+
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+        context.drawTextWithShadow(this.textRenderer, "Vyro Client", this.width / 2 - 30, 20, TITLE_COLOR);
+    }
+
+    @Override
+    public boolean shouldPause() {
+        return false;
+    }
+}
